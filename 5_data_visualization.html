@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Visualization</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
+    <script src="libs/pagedtable/js/pagedtable.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Data Visualization
+
+---
+
+
+
+
+### Data Visualization
+
+The agenda of this will be
+
+
+1. The `ggplot2` package. Flexible plotting with a grammar by Hadley Wickham, a well-known R guru. We will do a deep dive into the general template of `ggplot2`.
+
+---
+
+### Dataset Example
+
+We will be using the `mpg` dataset, which contains observations collected by the US Environment Protection Agency on 38 models of car.
+
+
+```r
+mpg
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; manufacturer &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; model &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; displ &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; cyl &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; trans &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; drv &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; cty &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hwy &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(l5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2008 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m6) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2008 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(av) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(l5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Dataset Example
+
+Among the variables in `mpg` are:
+
+* `displ` A car’s engine size, in litres.
+
+* `hwy` A car’s fuel efficiency on the highway, in miles per gallon (mpg). A car with a low fuel efficiency consumes more fuel than a car with a high fuel efficiency when they travel the same distance.
+
+To learn more about `mpg`, open its help page by running `?mpg`.
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; manufacturer &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; model &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; displ &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; cyl &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; trans &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; drv &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; cty &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hwy &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(l5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2008 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m6) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2008 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(av) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; auto(l5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; audi &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; a4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; manual(m5) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; f &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 26 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### Creating a ggplot
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-5-1.png" width="80%" /&gt;
+
+---
+
+### Exercise 5.1.  
+
+---
+
+### Template for graphing
+
+`ggplot2` is a &lt;b&gt; Grammar of Graphics &lt;/b&gt;, the basic template for using ggplot is:
+&lt;/br&gt;
+```
+ggplot(data = &lt;DATA&gt;) + 
+  &lt;GEOM_FUNCTION&gt;(mapping = aes(&lt;MAPPINGS&gt;))
+```
+
+--
+
+### Example
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+In the above template:
+
+- `&lt;DATA&gt;`: Is the `mpg` data frame.
+- `&lt;GEOM_FUNCTION&gt;`: Is the `geom_point` function. Think of a geom as something which is stacked on top of the plot. One can stack an arbitrary number of geoms on top of each other.
+- `&lt;MAPPINGS&gt;`: The variables `displ` and `hwy` is mapped to the `\((x,y)\)` coordinates in the above plot.
+
+---
+
+### `&lt;MAPPINGS&gt;`
+
+You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an &lt;b&gt;aesthetic&lt;/b&gt;. 
+
+
+```r
+ggplot(data = mpg) + 
+* geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-7-1.png" width="80%" /&gt;
+
+???
+To map an aesthetic to a variable, associate the name of the aesthetic to the name of the variable inside aes(). ggplot2 will automatically assign a unique level of the aesthetic (here a unique color) to each unique value of the variable, a process known as scaling. ggplot2 will also add a legend that explains which levels correspond to which values.
+
+---
+
+### `&lt;MAPPINGS&gt;`
+
+An &lt;b&gt;aesthetic&lt;/b&gt; is a visual property of the objects in your plot. Aesthetics include things like the `color`, `size`, `alpha`, `shape` of your points. 
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = class)) 
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-8-1.png" width="80%" /&gt;
+
+---
+
+### `&lt;MAPPINGS&gt;`
+
+The `alpha` aesthetic Controls the transparency of the points.
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class)) 
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-9-1.png" width="80%" /&gt;
+
+---
+
+### `&lt;MAPPINGS&gt;`
+
+The `shape` aesthetic controls the shape of the points.
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class)) 
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-10-1.png" width="80%" /&gt;
+
+---
+
+### Manually setting Aesthetics
+You can also set the aesthetic properties of your geom manually.
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue") 
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-11-1.png" width="80%" /&gt;
+
+To set an aesthetic manually, set the aesthetic by name as an argument of your geom function, e.g. outside of `aes()`.
+
+---
+
+### Exercise 5.2.
+
+---
+
+### Facets
+
+One way to add additional variables is with aesthetics. Another way, particularly useful for categorical variables, is to split your plot into facets, subplots that each display one subset of the data.
+
+--
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(drv ~ cyl, nrow = 2)
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-12-1.png" width="80%" /&gt;
+
+--
+
+The variable that you pass to facet_wrap() should be discrete.
+
+---
+
+### Facets
+
+
+```r
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-13-1.png" width="80%" /&gt;
+
+`facet_grid` forms a matrix of panels defined by row and column faceting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.
+
+---
+
+### Exercise 5.3. 
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+
+Recall the basic template
+
+&lt;/br&gt;
+```
+ggplot(data = &lt;DATA&gt;) + 
+  &lt;GEOM_FUNCTION&gt;(mapping = aes(&lt;MAPPINGS&gt;))
+```
+&lt;/br&gt;
+
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+
+A geom is the geometrical object that a plot uses to represent data.
+
+
+```r
+ggplot(data = mpg) + 
+* geom_point(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) + 
+* geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-15-1.png" width="80%" /&gt;
+
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+To display multiple geoms in the same plot, add multiple geom functions to `ggplot()`. One can stack an arbitrary number of geoms on top of each other.
+
+
+```r
+ggplot(data = mpg) + 
+* geom_point(mapping = aes(x = displ, y = hwy)) +
+* geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-16-1.png" width="80%" /&gt;
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+
+`gplot2` treat mappings provided to `ggplot()` as global mappings. You can avoid this type of repetition by passing a set of mappings to ggplot()
+
+
+```r
+*ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() + 
+  geom_smooth()
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-17-1.png" width="80%" /&gt;
+
+???
+This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display cty instead of hwy. You’d need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to ggplot(). ggplot2 will treat these mappings as global mappings that apply to each geom in the graph.
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+
+If you place mappings in a geom function, `ggplot2` will treat them as local mappings for the layer. It will use these mappings to extend or overwrite the global mappings for that layer only
+
+
+```r
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+* geom_point(mapping = aes(color = class)) +
+  geom_smooth()
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-18-1.png" width="80%" /&gt;
+
+???
+This makes it possible to display different aesthetics in different layers.
+
+---
+
+### `&lt;GEOM_FUNCTION&gt;`
+
+You can use the same idea to specify different data for each layer. Here, our smooth line displays just a subset of the `mpg` dataset, the subcompact `cars.` The local data argument in `geom_smooth()` overrides the global data argument in `ggplot()` for that layer only.
+
+
+```r
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == "subcompact"))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-19-1.png" width="80%" /&gt;
+
+???
+(You’ll learn how filter() works in the next chapter: for now, just know that this command selects only the subcompact cars.)
+
+---
+
+### Exercise 5.4.
+
+---
+
+### Dataset Example
+
+A dataset containing the prices and other attributes of almost 54,000 diamonds. The variables are as follows:
+
+
+- `price` price in US dollars 326-18,823$
+
+- `carat` weight of the diamond (0.2--5.01)
+
+- `cut` quality of the cut (Fair, Good, Very Good, Premium, Ideal)
+
+- `color` diamond colour, from J (worst) to D (best)
+
+- `clarity` a measurement of how clear the diamond is (I1 (worst), SI2, SI1, VS2, VS1, VVS2, VVS1, IF (best))
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; carat &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; cut &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; color &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; clarity &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; depth &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; table &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; price &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; x &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; y &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ideal &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SI2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61.5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 326 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.98 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.21 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Premium &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SI1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 59.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 326 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.84 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Good &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; VS1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 56.9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 327 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.07 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.29 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Premium &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; I &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; VS2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 62.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 334 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.23 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.31 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Good &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; J &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SI2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 335 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.35 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Very Good &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; J &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; VVS2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 62.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 336 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.96 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### Statistical Transformations
+
+
+
+```r
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-21-1.png" width="80%" /&gt;
+
+--
+
+Where does count come from?
+
+--
+
+The algorithm used to calculate new values for a graph is called a &lt;b&gt;stat&lt;/b&gt;, short for statistical transformation.
+
+---
+
+### Statistical Transformations
+
+![](images/visualization-stat-bar.png)
+
+
+???
+You can learn which stat a geom uses by inspecting the default value for the stat argument. For example, ?geom_bar shows that the default value for stat is “count”, which means that geom_bar() uses stat_count(). stat_count() is documented on the same page as geom_bar(), and if you scroll down you can find a section called “Computed variables”. That describes how it computes two new variables: count and prop.
+
+---
+
+### Color Bar Charts
+
+You can colour a bar chart using either the colour fill aesthetic.
+
+
+```r
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-22-1.png" width="80%" /&gt;
+
+---
+
+### Color Bar Charts
+
+Note what happens if you map the fill aesthetic to another variable, like clarity: the bars are automatically stacked. Each colored rectangle represents a combination of cut and clarity.
+
+
+```r
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+&lt;img src="images/data-visualization/unnamed-chunk-23-1.png" width="80%" /&gt;
+
+---
+
+### Exercise 5.5. 
+
+---
+
+### Creating a ggplot
+
+`ggplot2` is a &lt;b&gt; Grammar of Graphics &lt;/b&gt;. The general syntax is:
+&lt;/br&gt;
+```
+ggplot(data = &lt;DATA&gt;) + 
+  &lt;GEOM_FUNCTION&gt;(
+     mapping = aes(&lt;MAPPINGS&gt;),
+     stat = &lt;STAT&gt;, 
+     position = &lt;POSITION&gt;
+  ) +
+  &lt;COORDINATE_FUNCTION&gt; +
+  &lt;FACET_FUNCTION&gt;
+```
+&lt;/br&gt;
+You can uniquely describe any plot as a combination of these 7 parameters.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

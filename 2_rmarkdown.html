@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>R Markdown</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
+    <script src="libs/pagedtable/js/pagedtable.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# R Markdown
+
+---
+
+
+
+
+### R Markdown
+
+The agenda for this will be
+
+1. What is R Markdown and why is it useful
+2. YAML for render parameters
+3. Text types
+4. R code, Images and tables in R Markdown
+5. Dashboard Basics
+
+---
+
+### What is R Markdown and&lt;/br&gt; why is it useful
+
+R Markdown is a file format for making dynamic documents with R. An R Markdown document is written in markdown (an easy-to-write plain text format) and contains chunks of embedded R code.
+
+![](images/rmarkdown_basics.png)
+
+---
+
+### Exercise 2.1.
+
+2.1.1. Create a new R Markdown file (.Rmd) in RStudio by going to 
+  ```
+  File -&gt; New File -&gt; R Markdown
+  ``` 
+  And specify it as a HTML document.
+
+2.1.2. Click on the ![](images/knit.png) save the file to 
+  ```
+  Desktop/Applied_Data_Science_with_R/exercises/2_rmarkdown/analysis_of_cars.Rmd
+  ``` 
+  and view the generated document.
+
+2.1.3. Try specifying the output type as `word_document` in the header.
+
+
+```r
+---
+title: "Analysis of Cars"
+author: "Troels Lægsgaard"
+date: "October 8, 2018"
+*output: word_document
+---
+```
+
+
+---
+
+### What is R Markdown and&lt;/br&gt; why is it useful
+
+Rmarkdown can give various different outputs depending on how you configure it.
+
+![](images/rmarkdown_formats.png)
+
+---
+
+### YAML for render&lt;/br&gt; parameters
+
+Use the YAML header to control how rmarkdown renders your .Rmd file. A YAML header is a section of key: value pairs surrounded by --- marks, like below:
+
+```yaml
+---
+title: "Analysis of Cars"
+author: "Troels Lægsgaard"
+date: "October 8, 2018"
+output: html_document
+---
+```
+
+???
+https://rmarkdown.rstudio.com/articles_intro.html
+
+---
+
+### Text Formatting
+
+.pull-left[
+`This is the input`
+***
+`*This is Italic text*`
+
+`**This is Bold text**`
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+`# First-level header`
+&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;&lt;/br&gt;
+`## Second-level header`
+]
+
+--
+
+.pull-right[
+`This is the output`
+***
+*This is Italic text*
+
+**This is Bold text**
+
+# First-level header 
+
+## Second-level header
+
+]
+
+---
+
+### Math with Latex
+
+.pull-left[
+`This is the input`
+***
+LaTeX math expressions inside a pair of dollar signs &amp;#36;\alpha+\beta$ is inline.
+
+LaTeX math expressions inside a double pair of dollar signs is displayed
+```
+$$\frac{1}{n}\sum_{i=1}^nX_i$$
+```
+]
+
+--
+
+.pull-right[
+`This is the output`
+***
+LaTeX math expressions inside a pair of dollar signs `\(\alpha+\beta\)` is inline.
+
+LaTeX math expressions inside a double pair of dollar signs is displayed
+`$$\frac{1}{n}\sum_{i=1}^nX_i$$`
+]
+
+--
+
+Limitations:
+
+1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs.
+
+1. There should not be spaces after the opening `$` or before the closing `$`.
+
+1. Math does not work in the titles e.g. `#`, `##`, `###`
+
+---
+
+### R code 
+
+Press `CTRL+ALT+I` in the `.Rmd` document. This will insert a code block into the markdown file. 
+
+![](images/controls.png)
+
+Run the chunk by pressing ![](images/evaluate_cell.png) and run all chunks above this one by pressing ![](images/evaluate_all_down.png).
+
+---
+
+### R code
+
+Click on the ![](images/display.png) to view the options for manupulating the output showed:
+
+![](images/evaluations.png)  
+
+---
+
+### Example Usecase
+
+
+```r
+par(mar = c(4, 4, 1, .1))
+fit = lm(dist ~ 1 + speed, data = cars)
+plot(cars, pch = 19, col = 'darkgray', las = 1)
+```
+
+![](images/rmarkdown/cars-1.svg)&lt;!-- --&gt;
+
+```r
+abline(fit, lwd = 2)
+```
+
+![](images/rmarkdown/cars-2.svg)&lt;!-- --&gt;
+
+
+---
+
+### Images
+
+You can insert images the syntax is:
+
+
+```r
+![&lt;ALTERNATIVE_TEXT&gt;](&lt;PATH_TO_FILE&gt;)
+```
+
+--
+
+.pull-left[
+`This is the input`
+***
+`![mona](images/mona_lisa.png)`
+]
+
+--
+
+.pull-right[
+`This is the output`
+***
+&lt;div style="width:300px; height:200px"&gt;
+ &lt;img src="images/mona_lisa.png" height="90%" width="90%" /&gt;
+&lt;/div&gt;
+]
+
+---
+
+### Tables
+
+If you want to generate nicer looking tables make sure to change the YAML header.
+
+```yaml
+---
+title: "Analysis of Cars"
+author: "Troels Lægsgaard"
+date: "10/6/2018"
+output: 
+  html_document:
+    df_print: paged
+---
+```
+
+
+```r
+head(cars)
+```
+
+&lt;div data-pagedtable="false"&gt;
+  &lt;script data-pagedtable-source type="application/json"&gt;
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["speed"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["dist"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"4","2":"2","_rn_":"1"},{"1":"4","2":"10","_rn_":"2"},{"1":"7","2":"4","_rn_":"3"},{"1":"7","2":"22","_rn_":"4"},{"1":"8","2":"16","_rn_":"5"},{"1":"9","2":"10","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+---
+
+### Exercise 2.2.
+
+---
+
+### Dashboards in R
+
+A great package for making dashboards is [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/using.html). 
+
+- Use R Markdown to publish a group of related data visualizations as a dashboard.
+
+- Support for a wide variety of components.
+
+- Flexible and easy to specify row and column-based layouts. Components are intelligently re-sized to fill the browser and adapted for display on mobile devices.
+
+- Optionally use Shiny to drive visualizations dynamically.
+
+---
+
+### Slideshows
+
+There is different types of presentations:
+
+- ioslides
+- slidy
+- beamer 
+
+Which can be made going to:`File -&gt; New File -&gt; R Markdown -&gt; Presentation`. These are really straight forward to make.
+
+The slides for this course are made using Xarigans' **Presentation Ninja**, which is really awesome https://github.com/yihui/xaringan. This has to be installed first. And the syntax is a bit different, references will be put in the curriculum.
+
+---
+
+### Learn More
+
+There is a lot to RMarkdown which we don't have time for a deep dive into, but it is nice to know where to look to explore:
+.pull-left[
+[R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+
+[R Markdown from RStudio](https://rmarkdown.rstudio.com/lesson-1.html)
+]
+.pull-right[
+&lt;img src="images/rmarkdown_the_definitive_guide.png" width="50%" /&gt;&lt;img src="images/rstudio_logo.png" width="50%" /&gt;
+]
+
+???
+Go to the html_documents in R Markdown and open the other link as well
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

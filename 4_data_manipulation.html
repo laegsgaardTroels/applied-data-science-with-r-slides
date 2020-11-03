@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Manipulation</title>
+    <meta charset="utf-8" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/pagedtable/css/pagedtable.css" rel="stylesheet" />
+    <script src="libs/pagedtable/js/pagedtable.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Data Manipulation
+
+---
+
+
+
+
+### Data Manipulation 
+
+The agenda for this will be
+
+1. Basic Data Manipulation Verbs
+2. The Pipe Operator - for more readable code 
+3. Grouped Operations
+4. Window Functions
+5. Relational Data
+
+---
+
+### Dataset example
+
+We will be using a dataset containing flights departing New York City in 2013 from US Bureau of Transportation Statistics.
+
+```r
+library(nycflights13)
+flights
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 517 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 819 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 533 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 540 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 923 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 544 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 545 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1022 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 812 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 740 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 728 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+???
+http://r4ds.had.co.nz/transform.html#select-columns-with-select, chapter 5.
+
+---
+### Dataset example
+The dataset contains
+
+* `year,month,day` Date of departure
+* `dep_time,arr_time` Actual departure and arrival times, local tz.
+* `sched_dep_time,sched_arr_time` Scheduled departure and arrival times, local time-zone.
+* `dep_delay,arr_delay` Departure and arrival delays, in minutes. Negative times represent early departures/arrivals.
+* `hour,minute` Time of scheduled departure broken into hour and minutes.
+* `carrier` Two letter carrier abbreviation. 
+* `tailnum` Plane tail number
+* `flight` Flight number
+* `origin,dest` Origin and destination. See airports for additional metadata.
+* `air_time` Amount of time spent in the air, in minutes
+* `distance` Distance between airports, in miles
+* `time_hour` Scheduled date and hour of the flight as a POSIXct date. Along with origin, can be
+used to join flights data to weather data.
+
+---
+
+### Basic Data Manipulation &lt;/br&gt; Verbs
+`dplyr` is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges.
+
+--
+
+`dplyr`'s verbs for data manipulation:
+
+- `filter()`: Filter rows based on a boolean expression.
+- `arrange()`: Orders by a given column.
+- `select()`: Select columns of a data frame.
+- `mutate()`: Adds a new column, which is a function of existing columns.
+- `summarise()`: Condense multiple values to a single value.
+
+--
+
+The above verbs can be used in conjuction with `group_by()` which changes the scope of each function from operating on the entire dataset to operating on it group-by-group.
+---
+
+### Filter rows with `filter()`
+`filter()` allows you to subset observations based on their values, the first argument of this and all other verbs is the data frame. The subsequent arguments are boolean expressions that filters the data frame.
+
+
+```r
+filter(flights, month == 1, day == 1)
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 517 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 819 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 533 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 540 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 923 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 544 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 545 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1022 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 812 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 740 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 728 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+???
+For example, we can select all flights on January 1st.
+
+---
+
+### Filtering effectively
+
+Use the comparison operators: `&gt;`, `&gt;=`, `&lt;`, `&lt;=`, `!=` (not equal) and `==` (equal). E.g.
+
+
+```r
+jan_after5 &lt;- filter(flights, month == 1, day &gt;= 5)
+
+notjan_before5 &lt;- filter(flights, month != 1, day &lt;= 5)
+```
+
+---
+
+### Logical Operators
+
+Multiple comma seperated arguments to `filter()` are combined with AND: Every boolean expression must be `TRUE` in order for a row to be included in the output. For other types of combinations you'll need to use the Boolean operators: `&amp;` (and), `|` (or) and `!` (not).
+
+![](images/transform-logical.png)
+
+---
+
+### Logical Operators
+
+Flights which departed November or December: 
+
+
+```r
+filter(flights, month == 11 | month == 12)
+```
+
+--
+
+
+**NOTE: The `%in%` operator**
+
+A useful short-hand to use for the above is `x %in% y`. This will select every row where `x` is one of the values in `y`. The above can be rewritten as:
+
+
+```r
+filter(flights, month %in% c(11, 12))
+```
+
+--
+
+Using `!` we can get flights which did not depart in November or December. 
+
+
+```r
+filter(flights, !(month %in% c(11, 12)))
+```
+
+
+
+---
+
+### Floating point numbers
+
+Remember that computers have only finite precision so.
+
+
+```r
+sqrt(2) ^ 2 == 2
+```
+
+```
+## [1] FALSE
+```
+
+
+```r
+49 * (1 / 49) == 1
+```
+
+```
+## [1] FALSE
+```
+
+When doing arithmetic comparisons you can therefore use `near()`.
+
+
+```r
+near(sqrt(2) ^ 2, 2)
+```
+
+```
+## [1] TRUE
+```
+
+
+```r
+near(49 * (1 / 49), 1)
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+### Missing Values
+
+One important feature of R that can make comparison tricky are missing values, or `NA`'s (“not availables”). `NA` represents an unknown value so missing values are “contagious”.
+
+
+```r
+NA &gt; 5
+```
+
+```
+## [1] NA
+```
+
+```r
+10 == NA
+```
+
+```
+## [1] NA
+```
+
+```r
+NA + 10
+```
+
+```
+## [1] NA
+```
+
+```r
+NA / 2
+```
+
+```
+## [1] NA
+```
+
+???
+
+almost any operation involving an unknown value will also be unknown
+
+---
+
+### Missing Values
+
+Worst of all..
+
+
+```r
+NA == NA
+```
+
+```
+## [1] NA
+```
+
+To handle NA's we therefore use `is.na()`:
+
+
+```r
+is.na(NA)
+```
+
+```
+## [1] TRUE
+```
+
+To filter them away, replace them or whatever is the best action in the given analysis.
+---
+
+### Exercise 4.1.
+
+???
+https://www.rdocumentation.org/packages/nycflights13/versions/1.0.0/topics/flights
+
+---
+
+### Arrange rows with &lt;/br&gt; `arrange()`
+
+`arrange()` works similarly to `filter()` except that instead of selecting rows, it changes their order. It takes a data frame and a set of column names (or more complicated expressions) to order by. If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns:
+
+
+```r
+arrange(flights, arr_delay) 
+```
+
+Use `desc()` to re-order in descending order:
+
+
+```r
+arrange(flights, desc(arr_delay))
+```
+
+&lt;style&gt;
+  .col2 {
+    columns: 2 200px;         /* number of columns and width in pixels*/
+    -webkit-columns: 2 200px; /* chrome, safari */
+    -moz-columns: 2 200px;    /* firefox */
+  }
+&lt;/style&gt;
+
+
+&lt;div class="col2" align="center"&gt;
+&lt;table class="table" style="font-size: 16px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Ascending&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -86 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -79 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -75 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -75 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class="table" style="font-size: 16px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Descending&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1272 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1127 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1109 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1007 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+
+---
+
+### Exercise 4.2.
+
+---
+
+### Select columns with &lt;/br&gt; `select()`
+
+`select()` allows you to rapidly zoom in on a useful subset using operations based on the names of the variables.
+
+
+```r
+select(flights, year, month, day)
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Select columns with &lt;/br&gt; `select()`
+
+Remove year, day by inserting a minus in front of the variable:
+
+```r
+select(flights, -c(year, day))
+```
+
+--
+
+Select has a couple of nice helper functions:
+
+* `starts_with("abc")`: matches names that begin with “abc”.
+
+* `ends_with("xyz")`: matches names that end with “xyz”.
+
+* `contains("ijk")`: matches names that contain “ijk”.
+
+---
+
+### Select columns with &lt;/br&gt; `select()`
+
+Use `rename()`, which is a variant of `select()` that keeps all the variables that aren’t explicitly mentioned, and renames the given variable:
+
+
+```r
+rename(flights, deptime = dep_time)
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; deptime &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_dep_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; sched_arr_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 517 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 819 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 533 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 529 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 542 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 540 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 923 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 544 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 545 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1022 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 600 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 812 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 740 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 728 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Exercise 4.3.
+
+---
+
+### Grouped summaries &lt;/br&gt; with `summarise()`
+
+`summarise()` collapses a data frame to a single row:
+
+
+```r
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 12.63907 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Grouped summaries &lt;/br&gt; with `summarise()`
+
+`summarise()` is not terribly useful unless we pair it with `group_by()`.
+
+
+```r
+by_day &lt;- group_by(flights, year, month, day)
+summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; delay &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11.548926 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13.858823 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.987832 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.951595 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.732218 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.148014 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Grouped summaries &lt;/br&gt; with `summarise()`
+
+`summarise()` is not terribly useful unless we pair it with `group_by()`.
+
+
+```r
+by_day &lt;- group_by(flights, year, month, day)
+summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+### The `ungroup()` function 
+
+You can ungroup a grouped dataframe using `ungroup()`. 
+
+
+```r
+by_day &lt;- group_by(flights, year, month, day) 
+flights &lt;- ungroup(by_day)
+```
+
+Returns `flights` ungrouped.
+
+???
+summarise() is not terribly useful unless we pair it with group_by(). This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by date, we get the average delay per date.
+
+Together group_by() and summarise() provide one of the tools that you’ll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.
+
+---
+
+### The pipe operator
+
+Using what we know about dplyr until now can quickly end up in code which is uneasy to read.
+
+
+```r
+by_dest &lt;- group_by(flights, dest)
+delay &lt;- summarise(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay &lt;- filter(delay, count &gt; 20, dest != "HNL")
+```
+
+---
+
+### The pipe operator
+
+Using what we know about dplyr until now can quickly end up in code which is uneasy to read.
+
+
+```r
+by_dest &lt;- group_by(flights, dest)
+delay &lt;- summarise(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay &lt;- filter(delay, count &gt; 20, dest != "HNL")
+```
+
+--
+
+To solve this one can use the pipe operator: %&gt;%.
+
+
+```r
+delays &lt;- flights %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %&gt;% 
+  filter(count &gt; 20, dest != "HNL")
+```
+
+
+???
+
+The pipe operator can be read as "and then".
+Like a unix pipe | if anyone is familiar with this.
+
+
+---
+### The pipe operator
+
+Pipes is used to do a series of actions in a interpretable way, they can be read as "and then".
+
+Pipes `%&gt;%` take the output from the left side function and feed it to the first argument of the right side function this means that 
+* `x %&gt;% f(y)` is the same as `f(x, y)`.
+* `x %&gt;% f(y) %&gt;% g(z)` is the same as `g(f(x,y),z)`. 
+
+And so on.
+
+```r
+delays &lt;- flights %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %&gt;% 
+  filter(count &gt; 20, dest != "HNL")
+```
+
+You can insert the pipe operator using `CTRL+SHIFT+M`. 
+
+---
+
+### Exercise 4.4.
+
+
+---
+
+### Add new variables &lt;/br&gt; with `mutate()`
+
+The last key verb is `mutate()`. It adds a new columns at the end of your dataset.
+
+
+```r
+flights %&gt;% 
+  select(
+    year:day, 
+    ends_with("delay"), 
+    distance, 
+    air_time
+  ) %&gt;% 
+  mutate(
+    gain = arr_delay - dep_delay,
+    speed = distance / air_time * 60
+  )
+```
+
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; gain &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; speed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1400 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 370.0441 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1416 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 374.2731 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1089 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 408.3750 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1576 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 516.7213 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 762 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 394.1379 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Add new variables &lt;/br&gt; with `mutate()`
+
+Note that you can refer to columns that you’ve just created:
+
+
+```r
+flights %&gt;% 
+  select(
+    year:day, 
+    ends_with("delay"), 
+    distance, 
+    air_time
+  ) %&gt;% 
+  mutate(
+    gain = arr_delay - dep_delay,
+    air_hours = air_time / 60,
+    gain_per_hour = gain / air_hours
+  )
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; year &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; month &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; day &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; dep_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; arr_delay &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; distance &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_time &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; gain &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_hours &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1400 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.783333 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1416 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.783333 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1089 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.666667 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1576 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.050000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 762 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.933333 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+### Add new variables &lt;/br&gt; with `mutate()`
+
+If you only want to keep the new variables, use `transmute()`:
+
+
+```r
+flights %&gt;% 
+  transmute(
+    gain = arr_delay - dep_delay,
+    air_hours = air_time / 60,
+    gain_per_hour = gain / air_hours
+  )
+```
+
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; gain &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; air_hours &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; gain_per_hour &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.783333 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.378855 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.783333 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.229075 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.666667 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11.625000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.050000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.573771 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; -19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.933333 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -9.827586 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### Window Functions
+
+A window function is a variation on an aggregation function. Where an aggregation function, like `sum()` and `mean()` returns a single value, a window function returns the number of output values as input values.
+
+  - Cumulative aggregates: `cumsum()` and `cummean()`. 
+
+  - Ranking and ordering functions: `row_number()`, `min_rank()`, `dense_rank()`. These functions all take a vector to order by, and return various types of ranks.
+  
+  - Offsets `lead()` and `lag()` allow you to access the previous and next values in a vector, making it easy to compute differences and trends.
+  
+Window functions are useful with `mutate()`.
+
+---
+
+### Window Functions - Cummulative aggregates
+
+Cummulative aggregates calculates an applies an aggregate up to the given entry in an ordered vector. They usually have the prefix `cum`.
+
+
+```r
+x &lt;- c(1, 1, 2, 2, 2)
+```
+
+Sums over the order in the vector.
+
+
+```r
+cumsum(x)
+```
+
+```
+## [1] 1 2 4 6 8
+```
+
+Takes the mean over the order in the vector.
+
+
+```r
+cummean(x)
+```
+
+```
+## [1] 1.000000 1.000000 1.333333 1.500000 1.600000
+```
+
+
+---
+
+### Window Functions - Ranking
+
+These functions all take a vector to order by, and return various types of ranks, differing in how they handle ties:
+
+
+```r
+x &lt;- c(1, 1, 2, 2, 2)
+```
+
+Unique rank, even with ties.
+
+
+```r
+row_number(x)
+```
+
+```
+## [1] 1 2 3 4 5
+```
+
+When a ties hit, `min_rank()` takes the first index.
+
+
+```r
+min_rank(x)
+```
+
+```
+## [1] 1 1 3 3 3
+```
+
+Like min_rank(), but with no gaps between ranks.
+
+
+```r
+dense_rank(x)
+```
+
+```
+## [1] 1 1 2 2 2
+```
+
+---
+
+### Window Functions - Lead and lag
+
+`lead()` and `lag()` produce offset versions of a input vector that is either ahead of or behind the original vector.
+
+
+
+```r
+x &lt;- c(1, 2, 3, 4, 5)
+lead(x)
+```
+
+```
+## [1]  2  3  4  5 NA
+```
+
+```r
+lag(x)
+```
+
+```
+## [1] NA  1  2  3  4
+```
+
+---
+
+### Exercise 4.5.
+
+---
+
+### Relational Data
+
+Typically you have many tables of data, and you must combine them. Collectively, multiple tables of data are called relational data because it is the relations, not just the individual datasets, that are important..
+
+ &lt;img src="images/relational-nycflights.png" alt="Missing" style='max-width:80%; max-height:100%;'&gt; 
+
+
+---
+
+### Relational Data
+
+The variables used to connect each pair of tables are called keys. A key is a variable (or set of variables) that uniquely identifies an observation.
+
+There are two types of keys:
+
+  - A **primary key** uniquely identifies an observation in its own table. 
+
+  - A **foreign key** uniquely identifies an observation in another table. 
+
+&lt;img src="images/relational-nycflights.png" alt="Missing" style='max-width:50%; max-height:100%;'&gt; 
+
+???
+The column `tailnum` is a primary key in the `planes` table because it uniquely identifies each plane.
+For example, the column `tailnum` in the `flights` table is a foreign key because it appears in the flights table where it matches each flight to a unique row in the `planes` table.
+
+---
+
+### Relational Data
+
+.pull-left[
+ &lt;img src="images/joins.png" alt="Missing" style='max-width:90%; max-height:100%;'&gt; 
+ ]
+ 
+--
+ 
+.pull-right[
+
+As an example if one wish to investigate the type of planes for each carrier one could do a left join on `tailnum`.
+
+```r
+flights %&gt;% 
+  left_join(planes, by = "tailnum") %&gt;% 
+  select(carrier, type)
+```
+
+&lt;table class="table table-striped" style="font-size: 16px; width: auto !important; "&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; carrier &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; type &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; UA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed wing multi engine &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; UA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed wing multi engine &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed wing multi engine &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+&lt;img src="images/joins-venn.png" alt="Missing" style='max-width:100%; max-height:100%;'&gt; 
+
+]
+
+
+---
+
+### Exercise 4.6.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

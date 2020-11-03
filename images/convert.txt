@@ -1,0 +1,2 @@
+ 
+pdftoppm -png train_vallidation.pdf train_vallidation.png
