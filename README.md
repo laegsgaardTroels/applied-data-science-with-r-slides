@@ -2,6 +2,6 @@
 
 Code to generate slideshow.
 
-The exercises and rmarkdown code used to generate this is missing.
+The exercises and rmarkdown code used to generate this is intentionally missing.
 
 https://laegsgaardtroels.github.io/applied-data-science-with-r-slides/
